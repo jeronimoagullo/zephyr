@@ -11,8 +11,11 @@ compatible: "ovti,dvp"
 include: [base.yaml, pinctrl-device.yaml]
 
 properties:
-  interrupts:
+  clk-gpio:
     required: true
+    type: phandle-array
+    description: |
+      Identifies pin for the CKLK signal
 
   sensor:
     required: true

@@ -14,9 +14,32 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
 
-#define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(ov7670);
+LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_DBG);
+
+// Thread stack size and priority
+#define THREAD_CLK_STACK_SIZE 500
+#define THREAD_CLK_PRIORITY -1
+
+K_THREAD_STACK_DEFINE(thread_clk_stack_area, THREAD_CLK_STACK_SIZE);
+struct k_thread thread_clk_data;
+
+K_TIMER_DEFINE(clk_timer, NULL, NULL);
+
+void generate_clk_signal(const struct gpio_dt_spec *pinclk){
+	LOG_INF("generate clk signal thread created");
+
+	gpio_pin_configure_dt(pinclk, GPIO_OUTPUT_ACTIVE);
+	k_timer_init(&clk_timer, NULL, NULL);
+	k_timer_start(&clk_timer, K_NO_WAIT, K_USEC(1));
+
+	while(1){
+		//LOG_INF("time: %lld", k_uptime_ticks());
+		gpio_pin_toggle_dt(pinclk);
+		k_timer_status_sync(&clk_timer);
+	}
+}
+
 
 #define OV7670_REVISION  0x7673U //modified
 
@@ -177,6 +200,7 @@ LOG_MODULE_REGISTER(ov7670);
 
 struct ov7670_config {
 	struct i2c_dt_spec i2c;
+	const struct gpio_dt_spec pinclk; 
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	struct gpio_dt_spec reset_gpio;
 #endif
@@ -565,7 +589,23 @@ static int ov7670_init(const struct device *dev)
 	uint8_t pid, ver;
 	int ret;
 
-	LOG_DBG("Startin the ov7670 camera");
+	LOG_DBG("Wait some seconds");
+	k_msleep(2 * MSEC_PER_SEC);
+	LOG_DBG("Starting the ov7670 camera");
+
+	LOG_INF("**** Starting a new scan ****\n");
+	uint8_t data = 0x00;
+	for(int add = 0; add < 127; add++ ){
+		/* 3. verify i2c_write() */
+		if (i2c_write(cfg->i2c.bus, &data, 1, add) == 0) {
+			LOG_INF("Found sensor address 0x%02x\n", add);
+		}
+		k_msleep(1);
+	}
+	LOG_INF("**** Scanner finished ****\n");
+
+
+
 
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	LOG_INF("It has a reset pin");
@@ -624,13 +664,7 @@ static int ov7670_init(const struct device *dev)
 	return 0;
 }
 
-/* Unique Instance */
-static const struct ov7670_config ov7670_cfg_0 = {
-	.i2c = I2C_DT_SPEC_INST_GET(0),
-#if DT_INST_NODE_HAS_PROP(0, reset_gpios)
-	.reset_gpio = GPIO_DT_SPEC_INST_GET(0, reset_gpios),
-#endif
-};
+
 static struct ov7670_data ov7670_data_0;
 
 static int ov7670_init_0(const struct device *dev)
@@ -650,8 +684,24 @@ static int ov7670_init_0(const struct device *dev)
 	}
 #endif
 
+	k_tid_t thread_clk_id = k_thread_create(&thread_clk_data, thread_clk_stack_area,
+					K_THREAD_STACK_SIZEOF(thread_clk_stack_area),
+					generate_clk_signal,
+					&cfg->pinclk, NULL, NULL,
+					THREAD_CLK_PRIORITY, 0, K_NO_WAIT);
+	k_thread_start(thread_clk_id);	
+
 	return ov7670_init(dev);
 }
+
+static const struct ov7670_config ov7670_cfg_0 = {
+	.i2c = I2C_DT_SPEC_INST_GET(0),
+	.pinclk = GPIO_DT_SPEC_INST_GET(0, dvp_gpios),
+#if DT_INST_NODE_HAS_PROP(0, reset_gpios)
+	.reset_gpio = GPIO_DT_SPEC_INST_GET(0, reset_gpios),
+#endif
+};
+
 
 DEVICE_DT_INST_DEFINE(0, &ov7670_init_0, NULL,
 		    &ov7670_data_0, &ov7670_cfg_0,

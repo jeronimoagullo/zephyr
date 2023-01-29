@@ -11,5 +11,10 @@ properties:
     description: |
       The RESETn pin is asserted to disable the sensor causing a hard
       reset.  The sensor receives this as an active-low signal.
+  dvp-gpios:
+    required: true
+    type: phandle-array
+    description: |
+      Identifies pin for the CKLK signal
 
 include: i2c-device.yaml
