@@ -13,41 +13,10 @@
 #include <zephyr/drivers/video.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
-<<<<<<< HEAD
 #include <zephyr/drivers/pwm.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_DBG);
-
-// Thread stack size and priority
-#define THREAD_CLK_STACK_SIZE 500
-#define THREAD_CLK_PRIORITY -1
-
-K_THREAD_STACK_DEFINE(thread_clk_stack_area, THREAD_CLK_STACK_SIZE);
-struct k_thread thread_clk_data;
-
-K_TIMER_DEFINE(clk_timer, NULL, NULL);
-
-void generate_clk_signal(const struct gpio_dt_spec *pinclk){
-	LOG_INF("generate clk signal thread created");
-
-	gpio_pin_configure_dt(pinclk, GPIO_OUTPUT_ACTIVE);
-	k_timer_init(&clk_timer, NULL, NULL);
-	k_timer_start(&clk_timer, K_NO_WAIT, K_MSEC(500));
-
-	while(1){
-		//LOG_INF("time: %lld", k_uptime_ticks());
-		gpio_pin_toggle_dt(pinclk);
-		k_timer_status_sync(&clk_timer);
-	}
-}
-
-=======
-
-#define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
-#include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(ov7670);
->>>>>>> 1344c67b8c6c7f734385a580335e4b495fe48fab
 
 #define OV7670_REVISION  0x7673U //modified
 
@@ -353,6 +322,7 @@ static const struct ov7670_reg ov7670_init_reg_tb[] = {
 static int ov7670_write_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 			    uint8_t value)
 {
+	LOG_DBG("writing to 0x%x, reg: 0x%x, val: 0x%x", spec->addr, reg_addr, value);
 	struct i2c_msg msgs[2];
 
 	msgs[0].buf = (uint8_t *)&reg_addr;
@@ -366,6 +336,30 @@ static int ov7670_write_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 	return i2c_transfer_dt(spec, msgs, 2);
 }
 
+#ifdef CONFIG_BOARD_ESP32
+static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
+			   uint8_t *value)
+{
+	int rc = 0;
+
+	rc = i2c_write_dt(spec, &reg_addr, 1);
+	if (rc != 0) {
+		LOG_ERR("error writing: %d", rc);
+		return rc;
+	}
+
+	rc = i2c_read_dt(spec, value, 1);
+	if (rc != 0) {
+		LOG_ERR("error writing: %d", rc);
+		return rc;
+	}
+
+	LOG_DBG("Read from 0x%x, reg = 0x%x, val: 0x%x", spec->addr, reg_addr, *value);
+
+	return 0;
+}
+
+#else
 static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 			   uint8_t *value)
 {
@@ -385,6 +379,7 @@ static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 
 	return i2c_transfer_dt(spec, msgs, 2);
 }
+#endif
 
 int ov7670_modify_reg(const struct i2c_dt_spec *spec,
 		      uint8_t reg_addr,
@@ -487,7 +482,8 @@ static int ov7670_set_fmt(const struct device *dev,
 	}
 
 	/* Set clock : framerate 30fps, input clock 24M*/
-	ov7670_set_clock(dev, 30, 24000000);
+	//ov7670_set_clock(dev, 30, 24000000);
+	ov7670_set_clock(dev, 14, 13000000);
 
 	/* Set output format */
 	for (uint8_t i = 0; i < ARRAY_SIZE(ov7670_pf_configs); i++) {
@@ -599,21 +595,7 @@ static int ov7670_init(const struct device *dev)
 	uint8_t pid, ver;
 	int ret;
 
-	LOG_DBG("Wait some seconds");
-	k_msleep(2 * MSEC_PER_SEC);
 	LOG_DBG("Starting the ov7670 camera");
-
-	LOG_INF("**** Starting a new scan ****\n");
-	uint8_t data = 0x00;
-	for(int add = 0; add < 127; add++ ){
-		/* 3. verify i2c_write() */
-		if (i2c_write(cfg->i2c.bus, &data, 1, add) == 0) {
-			LOG_INF("Found sensor address 0x%02x\n", add);
-		}
-		k_msleep(1);
-	}
-	LOG_INF("**** Scanner finished ****\n");
-
 
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	LOG_INF("It has a reset pin");
@@ -631,7 +613,7 @@ static int ov7670_init(const struct device *dev)
 	/* Identify the device. */
 	ret = ov7670_read_reg(&cfg->i2c, OV7670_PID, &pid);
 	if (ret) {
-		LOG_ERR("Unable to read PID");
+		LOG_ERR("Unable to read PID, ret = %d", ret);
 		return -ENODEV;
 	}
 
@@ -651,13 +633,17 @@ static int ov7670_init(const struct device *dev)
 	LOG_DBG("The resvision ID is correct");
 
 	/* Device identify OK, perform software reset. */
-	ov7670_write_reg(&cfg->i2c, OV7670_COM7, 0x80);
+	ret = ov7670_write_reg(&cfg->i2c, OV7670_COM7, 0x80);
+	if (ret) {
+		LOG_ERR("Fail to reset the camera. Error: %d", ret);
+		return -ENODEV;
+	}
 	LOG_DBG("Reseting camera");
 
 	k_sleep(K_MSEC(2));
 
 	/* set default/init format VGA RGB565 */
-	/*fmt.pixelformat = VIDEO_PIX_FMT_RGB565;
+	fmt.pixelformat = VIDEO_PIX_FMT_RGB565;
 	fmt.width = 640;
 	fmt.height = 480;
 	fmt.pitch = 640 * 2;
@@ -665,7 +651,7 @@ static int ov7670_init(const struct device *dev)
 	if (ret) {
 		LOG_ERR("Unable to configure default format");
 		return -EIO;
-	}*/
+	}
 
 	LOG_DBG("camera ready");
 
@@ -691,20 +677,12 @@ static int ov7670_init_0(const struct device *dev)
 	}
 #endif
 
-	k_tid_t thread_clk_id = k_thread_create(&thread_clk_data, thread_clk_stack_area,
-					K_THREAD_STACK_SIZEOF(thread_clk_stack_area),
-					generate_clk_signal,
-					&cfg->pins, NULL, NULL,
-					THREAD_CLK_PRIORITY, 0, K_NO_WAIT);
-	k_thread_start(thread_clk_id);
-
 	if (!device_is_ready(cfg->pinclk.dev)) {
 		LOG_ERR("pwm device is not ready");
 		return -ENODEV;
 	}
 
 	LOG_INF("PWM channel %d, period: %d", cfg->pinclk.channel, cfg->pinclk.period);
-
 
 	int ret = pwm_set_dt(&cfg->pinclk, cfg->pinclk.period, cfg->pinclk.period / 2U);
 	if (ret != 0){
