@@ -13,6 +13,7 @@
 #include <zephyr/drivers/video.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
+<<<<<<< HEAD
 #include <zephyr/drivers/pwm.h>
 
 #include <zephyr/logging/log.h>
@@ -41,6 +42,12 @@ void generate_clk_signal(const struct gpio_dt_spec *pinclk){
 	}
 }
 
+=======
+
+#define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(ov7670);
+>>>>>>> 1344c67b8c6c7f734385a580335e4b495fe48fab
 
 #define OV7670_REVISION  0x7673U //modified
 
@@ -608,8 +615,6 @@ static int ov7670_init(const struct device *dev)
 	LOG_INF("**** Scanner finished ****\n");
 
 
-
-
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	LOG_INF("It has a reset pin");
 	ret = gpio_pin_configure_dt(&cfg->reset_gpio, GPIO_OUTPUT_ACTIVE);
@@ -666,7 +671,6 @@ static int ov7670_init(const struct device *dev)
 
 	return 0;
 }
-
 
 static struct ov7670_data ov7670_data_0;
 

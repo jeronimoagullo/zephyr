@@ -16,7 +16,7 @@ properties:
     type: phandle-array
     description: |
       Identifies pin for the CKLK signal
-
+      
   sensor:
     required: true
     type: phandle
