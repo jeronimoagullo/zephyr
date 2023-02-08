@@ -13,6 +13,7 @@
 #include <zephyr/drivers/video.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/pwm.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_DBG);
@@ -31,7 +32,7 @@ void generate_clk_signal(const struct gpio_dt_spec *pinclk){
 
 	gpio_pin_configure_dt(pinclk, GPIO_OUTPUT_ACTIVE);
 	k_timer_init(&clk_timer, NULL, NULL);
-	k_timer_start(&clk_timer, K_NO_WAIT, K_USEC(1));
+	k_timer_start(&clk_timer, K_NO_WAIT, K_MSEC(500));
 
 	while(1){
 		//LOG_INF("time: %lld", k_uptime_ticks());
@@ -200,7 +201,9 @@ void generate_clk_signal(const struct gpio_dt_spec *pinclk){
 
 struct ov7670_config {
 	struct i2c_dt_spec i2c;
-	const struct gpio_dt_spec pinclk; 
+	const struct gpio_dt_spec pins; 
+	const struct pwm_dt_spec pinclk;
+	char *pwm_node;
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	struct gpio_dt_spec reset_gpio;
 #endif
@@ -687,16 +690,30 @@ static int ov7670_init_0(const struct device *dev)
 	k_tid_t thread_clk_id = k_thread_create(&thread_clk_data, thread_clk_stack_area,
 					K_THREAD_STACK_SIZEOF(thread_clk_stack_area),
 					generate_clk_signal,
-					&cfg->pinclk, NULL, NULL,
+					&cfg->pins, NULL, NULL,
 					THREAD_CLK_PRIORITY, 0, K_NO_WAIT);
-	k_thread_start(thread_clk_id);	
+	k_thread_start(thread_clk_id);
+
+	if (!device_is_ready(cfg->pinclk.dev)) {
+		LOG_ERR("pwm device is not ready");
+		return -ENODEV;
+	}
+
+	LOG_INF("PWM channel %d, period: %d", cfg->pinclk.channel, cfg->pinclk.period);
+
+
+	int ret = pwm_set_dt(&cfg->pinclk, cfg->pinclk.period, cfg->pinclk.period / 2U);
+	if (ret != 0){
+		LOG_ERR("set period error: %d", ret);
+	}
 
 	return ov7670_init(dev);
 }
 
 static const struct ov7670_config ov7670_cfg_0 = {
 	.i2c = I2C_DT_SPEC_INST_GET(0),
-	.pinclk = GPIO_DT_SPEC_INST_GET(0, dvp_gpios),
+	.pins = GPIO_DT_SPEC_INST_GET(0, dvp_gpios),
+	.pinclk = PWM_DT_SPEC_GET(DT_INST_PHANDLE(0, pwm)),
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	.reset_gpio = GPIO_DT_SPEC_INST_GET(0, reset_gpios),
 #endif

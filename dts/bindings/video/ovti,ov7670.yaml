@@ -15,6 +15,16 @@ properties:
     required: true
     type: phandle-array
     description: |
+      Identifies pins for pixel signals
+  pwms:
+    #required: true
+    type: phandle-array
+    description: |
+      Identifies pin for the CKLK signal
+  pwm:
+    #required: true
+    type: phandle
+    description: |
       Identifies pin for the CKLK signal
 
 include: i2c-device.yaml
