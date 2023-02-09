@@ -15,14 +15,14 @@ properties:
     required: true
     type: phandle-array
     description: |
-      Identifies pins for pixel signals
-  pwms:
-    #required: true
+      Identifies pins for control signals (hsync, vsync, href)
+  data-gpios:
+    required: false
     type: phandle-array
     description: |
-      Identifies pin for the CKLK signal
+      Identifies pins for pixel signals
   pwm:
-    #required: true
+    required: true
     type: phandle
     description: |
       Identifies pin for the CKLK signal

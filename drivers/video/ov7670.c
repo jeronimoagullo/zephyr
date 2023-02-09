@@ -20,154 +20,164 @@ LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_DBG);
 
 #define OV7670_REVISION  0x7673U //modified
 
-#define OV7670_GAIN       0x00U
-#define OV7670_BLUE       0x01U
-#define OV7670_RED        0x02U
-#define OV7670_GREEN      0x03U
-#define OV7670_BAVG       0x05U
-#define OV7670_GAVG       0x06U
-#define OV7670_RAVG       0x07U
-#define OV7670_AECH       0x08U
-#define OV7670_COM2       0x09U
-#define OV7670_PID        0x0AU //yes
-#define OV7670_VER        0x0BU //yes
-#define OV7670_COM3       0x0CU
-#define OV7670_COM4       0x0DU
-#define OV7670_COM5       0x0EU
-#define OV7670_COM6       0x0FU
-#define OV7670_AEC        0x10U
-#define OV7670_CLKRC      0x11U
-#define OV7670_COM7       0x12U //yes
-#define OV7670_COM8       0x13U
-#define OV7670_COM9       0x14U
-#define OV7670_COM10      0x15U
-#define OV7670_REG16      0x16U
-#define OV7670_HSTART     0x17U
-#define OV7670_HSIZE      0x18U
-#define OV7670_VSTART     0x19U
-#define OV7670_VSIZE      0x1AU
-#define OV7670_PSHFT      0x1BU
-#define OV7670_MIDH       0x1CU
-#define OV7670_MIDL       0x1DU
-#define OV7670_LAEC       0x1FU
-#define OV7670_COM11      0x20U
-#define OV7670_BDBASE     0x22U
-#define OV7670_BDMSTEP    0x23U
-#define OV7670_AEW        0x24U
-#define OV7670_AEB        0x25U
-#define OV7670_VPT        0x26U
-#define OV7670_REG28      0x28U
-#define OV7670_HOUTSIZE   0x29U
-#define OV7670_EXHCH      0x2AU
-#define OV7670_EXHCL      0x2BU
-#define OV7670_VOUTSIZE   0x2CU
-#define OV7670_ADVFL      0x2DU
-#define OV7670_ADVFH      0x2EU
-#define OV7670_YAVE       0x2FU
-#define OV7670_LUMHTH     0x30U
-#define OV7670_LUMLTH     0x31U
-#define OV7670_HREF       0x32U
-#define OV7670_DM_LNL     0x33U
-#define OV7670_DM_LNH     0x34U
-#define OV7670_ADOFF_B    0x35U
-#define OV7670_ADOFF_R    0x36U
-#define OV7670_ADOFF_GB   0x37U
-#define OV7670_ADOFF_GR   0x38U
-#define OV7670_OFF_B      0x39U
-#define OV7670_OFF_R      0x3AU
-#define OV7670_OFF_GB     0x3BU
-#define OV7670_OFF_GR     0x3CU
-#define OV7670_COM12      0x3DU
-#define OV7670_COM13      0x3EU
-#define OV7670_COM14      0x3FU
-#define OV7670_COM16      0x41U
-#define OV7670_TGT_B      0x42U
-#define OV7670_TGT_R      0x43U
-#define OV7670_TGT_GB     0x44U
-#define OV7670_TGT_GR     0x45U
-#define OV7670_LC_CTR     0x46U
-#define OV7670_LC_XC      0x47U
-#define OV7670_LC_YC      0x48U
-#define OV7670_LC_COEF    0x49U
-#define OV7670_LC_RADI    0x4AU
-#define OV7670_LC_COEFB   0x4BU
-#define OV7670_LC_COEFR   0x4CU
-#define OV7670_FIXGAIN    0x4DU
-#define OV7670_AREF1      0x4FU
-#define OV7670_AREF6      0x54U
-#define OV7670_UFIX       0x60U
-#define OV7670_VFIX       0x61U
-#define OV7670_AWBB_BLK   0x62U
-#define OV7670_AWB_CTRL0  0x63U
-#define OV7670_DSP_CTRL1  0x64U
-#define OV7670_DSP_CTRL2  0x65U
-#define OV7670_DSP_CTRL3  0x66U
-#define OV7670_DSP_CTRL4  0x67U
-#define OV7670_AWB_BIAS   0x68U
-#define OV7670_AWB_CTRL1  0x69U
-#define OV7670_AWB_CTRL2  0x6AU
-#define OV7670_AWB_CTRL3  0x6BU
-#define OV7670_AWB_CTRL4  0x6CU
-#define OV7670_AWB_CTRL5  0x6DU
-#define OV7670_AWB_CTRL6  0x6EU
-#define OV7670_AWB_CTRL7  0x6FU
-#define OV7670_AWB_CTRL8  0x70U
-#define OV7670_AWB_CTRL9  0x71U
-#define OV7670_AWB_CTRL10 0x72U
-#define OV7670_AWB_CTRL11 0x73U
-#define OV7670_AWB_CTRL12 0x74U
-#define OV7670_AWB_CTRL13 0x75U
-#define OV7670_AWB_CTRL14 0x76U
-#define OV7670_AWB_CTRL15 0x77U
-#define OV7670_AWB_CTRL16 0x78U
-#define OV7670_AWB_CTRL17 0x79U
-#define OV7670_AWB_CTRL18 0x7AU
-#define OV7670_AWB_CTRL19 0x7BU
-#define OV7670_AWB_CTRL20 0x7CU
-#define OV7670_AWB_CTRL21 0x7DU
-#define OV7670_GAM1       0x7EU
-#define OV7670_GAM2       0x7FU
-#define OV7670_GAM3       0x80U
-#define OV7670_GAM4       0x81U
-#define OV7670_GAM5       0x82U
-#define OV7670_GAM6       0x83U
-#define OV7670_GAM7       0x84U
-#define OV7670_GAM8       0x85U
-#define OV7670_GAM9       0x86U
-#define OV7670_GAM10      0x87U
-#define OV7670_GAM11      0x88U
-#define OV7670_GAM12      0x89U
-#define OV7670_GAM13      0x8AU
-#define OV7670_GAM14      0x8BU
-#define OV7670_GAM15      0x8CU
-#define OV7670_SLOP       0x8DU
-#define OV7670_DNSTH      0x8EU
-#define OV7670_EDGE0      0x8FU
-#define OV7670_EDGE1      0x90U
-#define OV7670_DNSOFF     0x91U
-#define OV7670_EDGE2      0x92U
-#define OV7670_EDGE3      0x93U
-#define OV7670_MTX1       0x94U
-#define OV7670_MTX2       0x95U
-#define OV7670_MTX3       0x96U
-#define OV7670_MTX4       0x97U
-#define OV7670_MTX5       0x98U
-#define OV7670_MTX6       0x99U
-#define OV7670_MTX_CTRL   0x9AU
-#define OV7670_BRIGHT     0x9BU
-#define OV7670_CNST       0x9CU
-#define OV7670_UVADJ0     0x9EU
-#define OV7670_UVADJ1     0x9FU
-#define OV7670_SCAL0      0xA0U
-#define OV7670_SCAL1      0xA1U
-#define OV7670_SCAL2      0xA2U
-#define OV7670_SDE        0xA6U
-#define OV7670_USAT       0xA7U
-#define OV7670_VSAT       0xA8U
-#define OV7670_HUECOS     0xA9U
-#define OV7670_HUESIN     0xAAU
-#define OV7670_SIGN       0xABU
-#define OV7670_DSPAUTO    0xACU
+#define OV7670_GAIN		0x00U
+#define OV7670_BLUE		0x01U
+#define OV7670_RED		0x02U
+#define OV7670_VREF		0x03U
+#define OV7670_COM1		0x04U
+#define OV7670_BAVE		0x05U
+#define OV7670_GBAVE		0x06U
+#define OV7670_AECHH		0x07U
+#define OV7670_RAVE		0x08U
+#define OV7670_COM2		0x09U
+#define OV7670_PID		0x0AU
+#define OV7670_VER		0x0BU
+#define OV7670_COM3		0x0CU
+#define OV7670_COM4		0x0DU
+#define OV7670_COM5		0x0EU
+#define OV7670_COM6		0x0FU
+#define OV7670_AECH		0x10U
+#define OV7670_CLKRC		0x11U
+#define OV7670_COM7		0x12U
+#define OV7670_COM8		0x13U
+#define OV7670_COM9		0x14U
+#define OV7670_COM10		0x15U
+#define OV7670_HSTART		0x17U
+#define OV7670_HSTOP		0x18U
+#define OV7670_VSTART		0x19U
+#define OV7670_VSTOP		0x1AU
+#define OV7670_PSHFT		0x1BU
+#define OV7670_MIDH		0x1CU
+#define OV7670_MIDL		0x1DU
+#define OV7670_MVFP		0x1EU
+#define OV7670_LAEC		0x1FU
+#define OV7670_ADCCTR0		0x20U
+#define OV7670_ADCCTR1		0x21U
+#define OV7670_ADCCTR2		0x22U
+#define OV7670_ADCCTR3		0x23U
+#define OV7670_AEW		0x24U
+#define OV7670_AEB		0x25U
+#define OV7670_VPT		0x26U
+#define OV7670_BBIAS		0x27U
+#define OV7670_GBBIAS		0x28U
+#define OV7670_EXHCH		0x2AU
+#define OV7670_EXHCL		0x2BU
+#define OV7670_RBIAS		0x2CU
+#define OV7670_ADVFL		0x2DU
+#define OV7670_ADVFH		0x2EU
+#define OV7670_YAVE		0x2FU
+#define OV7670_HSYST		0x30U
+#define OV7670_HSYEN		0x31U
+#define OV7670_HREF		0x32U
+#define OV7670_CHLF		0x33U
+#define OV7670_ARBLM		0x34U
+#define OV7670_ADC		0x37U
+#define OV7670_ACOM		0x38U
+#define OV7670_OFON		0x39U
+#define OV7670_TSLB		0x3AU
+#define OV7670_COM11		0x3BU
+#define OV7670_COM12		0x3CU
+#define OV7670_COM13		0x3DU
+#define OV7670_COM14		0x3EU
+#define OV7670_EDGE		0x3FU
+#define OV7670_COM15		0x40U
+#define OV7670_COM16		0x41U
+#define OV7670_COM17		0x42U
+#define OV7670_AWBC1		0x43U
+#define OV7670_AWBC2		0x44U
+#define OV7670_AWBC3		0x45U
+#define OV7670_AWBC4		0x46U
+#define OV7670_AWBC5		0x47U
+#define OV7670_AWBC6		0x48U
+#define OV7670_REG4B		0x4BU
+#define OV7670_DNSTH		0x4CU
+#define OV7670_MTX1		0x4FU
+#define OV7670_MTX2		0x50U
+#define OV7670_MTX3		0x51U
+#define OV7670_MTX4		0x52U
+#define OV7670_MTX5		0x53U
+#define OV7670_MTX6		0x54U
+#define OV7670_BRIGHT		0x55U
+#define OV7670_CONTRAS		0x56U
+#define OV7670_CONTRAS_CENTER	0x57U
+#define OV7670_MTXS		0x58U
+#define OV7670_LCC1		0x62U
+#define OV7670_LCC2		0x63U
+#define OV7670_LCC3		0x64U
+#define OV7670_LCC4		0x65U
+#define OV7670_LCC5		0x66U
+#define OV7670_MANU		0x67U
+#define OV7670_MANV		0x68U
+#define OV7670_GFIX		0x69U
+#define OV7670_GGAIN		0x6AU
+#define OV7670_DBLV		0x6BU
+#define OV7670_AWBCTR3		0x6CU
+#define OV7670_AWBCTR2		0x6DU
+#define OV7670_AWBCTR1		0x6EU
+#define OV7670_AWBCTR0		0x6FU
+#define OV7670_SCALING_XSC	0x70U
+#define OV7670_SCALING_YSC	0x71U
+#define OV7670_SCALING_DCWCTR	0x72U
+#define OV7670_SCALING_PCLK_DIV	0x73U
+#define OV7670_REG74		0x74U
+#define OV7670_REG75		0x75U
+#define OV7670_REG76		0x76U
+#define OV7670_REG77		0x77U
+#define OV7670_SLOP		0x7AU
+#define OV7670_GAM1		0x7BU
+#define OV7670_GAM2		0x7CU
+#define OV7670_GAM3		0x7DU
+#define OV7670_GAM4		0x7EU
+#define OV7670_GAM5		0x7FU
+#define OV7670_GAM6		0x80U
+#define OV7670_GAM7		0x81U
+#define OV7670_GAM8		0x82U
+#define OV7670_GAM9		0x83U
+#define OV7670_GAM10		0x84U
+#define OV7670_GAM11		0x85U
+#define OV7670_GAM12		0x86U
+#define OV7670_GAM13		0x87U
+#define OV7670_GAM14		0x88U
+#define OV7670_GAM15		0x89U
+#define OV7670_RGB444		0x8CU
+#define OV7670_DM_LNL		0x92U
+#define OV7670_DM_LNH		0x93U
+#define OV7670_LCC6		0x94U
+#define OV7670_LCC7		0x95U
+#define OV7670_BD50ST		0x9DU
+#define OV7670_BD60ST		0x9EU
+#define OV7670_HAECC1		0x9FU
+#define OV7670_HAECC2		0xA0U
+#define OV7670_SCAL_PCLK_DELAY	0xA2U
+#define OV7670_NT_CTRL		0xA4U
+#define OV7670_BD50MAX		0xA5U
+#define OV7670_HAECC3		0xA6U
+#define OV7670_HAECC4		0xA7U
+#define OV7670_HAECC5		0xA8U
+#define OV7670_HAECC6		0xA9U
+#define OV7670_HAECC7		0xAAU
+#define OV7670_BD60MAX		0xABU
+#define OV7670_STR_OPT		0xACU
+#define OV7670_STR_R		0xADU
+#define OV7670_STR_G		0xAEU
+#define OV7670_STR_B		0xAFU
+#define OV7670_ABLC1		0xB1U
+#define OV7670_THL_ST		0xB3U
+#define OV7670_THL_DLT		0xB5U
+#define OV7670_AD_CHB		0xBEU
+#define OV7670_AD_CHR		0xBFU
+#define OV7670_AD_CHBB		0xC0U
+#define OV7670_AD_CHGR		0xC1U
+#define OV7670_SATCTR		0xC9U
+
+
+#define  OV7670_COM8_FASTAEC	BIT(7)	/* Enable fast AGC/AEC */
+#define  OV7670_COM8_AECSTEP	BIT(6)	/* Unlimited AEC step size */
+#define  OV7670_COM8_BFILT	BIT(5)	/* Band filter enable */
+#define  OV7670_COM8_AGC	BIT(2)	/* Auto gain enable */
+#define  OV7670_COM8_AWB	BIT(1)	/* White balance enable */
+#define  OV7670_COM8_AEC	BIT(0)	/* Auto exposure enable */
+
 
 #define OV7670_COM10_VSYNC_NEG_MASK    BIT(1)
 #define OV7670_COM10_HREF_REVERSE_MASK BIT(3)
@@ -177,9 +187,10 @@ LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_DBG);
 
 struct ov7670_config {
 	struct i2c_dt_spec i2c;
-	const struct gpio_dt_spec pins; 
+	const struct gpio_dt_spec dvp_hsync; 
+	const struct gpio_dt_spec dvp_vsync; 
+	const struct gpio_dt_spec dvp_pclk; 
 	const struct pwm_dt_spec pinclk;
-	char *pwm_node;
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	struct gpio_dt_spec reset_gpio;
 #endif
@@ -187,6 +198,7 @@ struct ov7670_config {
 
 struct ov7670_data {
 	struct video_format fmt;
+	struct gpio_callback vsync_cb;
 };
 
 struct ov7670_clock {
@@ -240,83 +252,123 @@ static const struct ov7670_pixel_format ov7670_pf_configs[] = {
 };
 
 static const struct ov7670_reg ov7670_init_reg_tb[] = {
-	/*Output config*/
-	{ OV7670_CLKRC,          0x00 },
-	{ OV7670_COM7,           0x06 },
-	{ OV7670_HSTART,         0x3f },
-	{ OV7670_HSIZE,          0x50 },
-	{ OV7670_VSTART,         0x03 },
-	{ OV7670_VSIZE,          0x78 },
-	{ OV7670_HREF,           0x00 },
-	{ OV7670_HOUTSIZE,       0x50 },
-	{ OV7670_VOUTSIZE,       0x78 },
+	/** COM7
+	 * bit[5] -> CIF =  352 × 288 pixels
+	 * bit[4] -> QVGA = 320 × 240 pixels
+	 * bit[3] -> QCIF = 176 × 144 pixels
+	 * bit[2] -> RGB selection (1) or YUV (0)
+	 * bit[1] -> color bar disable (0) or enable (1)
+	 * bit[0] -> raw RBG (1) or YUV (0)
+	 */
 
-	/*DSP control*/
-	{ OV7670_TGT_B,          0x7f },
-	{ OV7670_FIXGAIN,        0x09 },
-	{ OV7670_AWB_CTRL0,      0xe0 },
-	{ OV7670_DSP_CTRL1,      0xff },
-	{ OV7670_DSP_CTRL2,      0x00 },
-	{ OV7670_DSP_CTRL3,      0x00 },
-	{ OV7670_DSP_CTRL4,      0x00 },
+	/*Output format 30fps QCIF (176 × 144 pixels) YUV mode */
+	{ OV7670_CLKRC,			0x01 },
+	{ OV7670_COM7,			0x00 },
+	{ OV7670_COM3,			0x0C },
+	{ OV7670_COM14,			0x11 },
+	{ OV7670_SCALING_XSC,		0x3A },
+	{ OV7670_SCALING_YSC,		0x35 },
+	{ OV7670_SCALING_DCWCTR,	0x11 },
+	{ OV7670_SCALING_PCLK_DIV,	0xF1 },
+	{ OV7670_SCAL_PCLK_DELAY,	0x52 },
+	{ OV7670_COM10,          0x00 }, // normal timing singals (positives)
+
+	/*{ OV7670_HSTART,         0x13 },
+	{ OV7670_HSTOP,          0x50 },
+	{ OV7670_VSTART,         0x03 },
+	{ OV7670_VSTOP,          0x78 },
+	{ OV7670_HREF,           0x00 },*/
 
 	/*AGC AEC AWB*/
-	{ OV7670_COM8,           0xf0 },
-	{ OV7670_COM4,           0x81 },
-	{ OV7670_COM6,           0xc5 },
-	{ OV7670_COM9,           0x11 },
-	{ OV7670_BDBASE,         0x7F },
-	{ OV7670_BDMSTEP,        0x03 },
-	{ OV7670_AEW,            0x40 },
-	{ OV7670_AEB,            0x30 },
-	{ OV7670_VPT,            0xa1 },
-	{ OV7670_EXHCL,          0x9e },
-	{ OV7670_AWB_CTRL3,      0xaa },
-	{ OV7670_COM8,           0xff },
+	{ OV7670_COM8,			OV7670_COM8_FASTAEC | OV7670_COM8_AECSTEP | OV7670_COM8_BFILT },
+	{ OV7670_GAIN,			0x00 },	
+	{ OV7670_AECH,			0x00 },
+	{ OV7670_COM4,			0x40 }, /* magic reserved bit */
+	{ OV7670_COM6,			0x02 },	/* reset timing when format changes */
+	{ OV7670_COM9,			0x11 }, /* 4x gain + Freeze AGC/AEC*/ /* original magic rsvd bit (0x18) */
+	{ OV7670_BD50MAX,		0x05 },	
+	{ OV7670_BD60MAX,		0x07 },
+	{ OV7670_AEW,			0x95 },	
+	{ OV7670_AEB,			0x33 },
+	{ OV7670_VPT,			0xe3 },	
+	{ OV7670_HAECC1,		0x78 },
+	{ OV7670_HAECC2,		0x68 },	
+	{ 0xa1, 0x03 }, /* reserved magic */
+	{ OV7670_HAECC3,		0xd8 },	
+	{ OV7670_HAECC4,		0xd8 },
+	{ OV7670_HAECC5,		0xf0 },	
+	{ OV7670_HAECC6,		0x90 },
+	{ OV7670_HAECC7,		0x94 },
+	{ OV7670_COM8,		OV7670_COM8_FASTAEC | OV7670_COM8_AECSTEP | 
+				OV7670_COM8_BFILT | OV7670_COM8_AGC | OV7670_COM8_AEC },
 
-	/*matrix sharpness brightness contrast*/
-	{ OV7670_EDGE1,          0x08 },
-	{ OV7670_DNSOFF,         0x01 },
-	{ OV7670_EDGE2,          0x03 },
-	{ OV7670_EDGE3,          0x00 },
-	{ OV7670_MTX1,           0xb0 },
-	{ OV7670_MTX2,           0x9d },
-	{ OV7670_MTX3,           0x13 },
-	{ OV7670_MTX4,           0x16 },
-	{ OV7670_MTX5,           0x7b },
-	{ OV7670_MTX6,           0x91 },
-	{ OV7670_MTX_CTRL,       0x1e },
-	{ OV7670_BRIGHT,         0x08 },
-	{ OV7670_CNST,           0x20 },
-	{ OV7670_UVADJ0,         0x81 },
-	{ OV7670_SDE,            0X06 },
-	{ OV7670_USAT,           0x65 },
-	{ OV7670_VSAT,           0x65 },
-	{ OV7670_HUECOS,         0X80 },
-	{ OV7670_HUESIN,         0X80 },
+	/* matrix sharpness brightness contrast*/
+	// TODO: how are they calculated?
+	{ OV7670_MTX1,		0x80 },
+	{ OV7670_MTX2,		0x80 },
+	{ OV7670_MTX3,		0x00 },
+	{ OV7670_MTX4,		0x22 },
+	{ OV7670_MTX5,		0x5E },
+	{ OV7670_MTX6,		0x80 },
+	{ OV7670_MTXS,		0x9E },
+	{ OV7670_BRIGHT,	0x08 },
 
 	/*GAMMA config*/
-	{ OV7670_GAM1,           0x0c },
-	{ OV7670_GAM2,           0x16 },
-	{ OV7670_GAM3,           0x2a },
-	{ OV7670_GAM4,           0x4e },
-	{ OV7670_GAM5,           0x61 },
-	{ OV7670_GAM6,           0x6f },
-	{ OV7670_GAM7,           0x7b },
-	{ OV7670_GAM8,           0x86 },
-	{ OV7670_GAM9,           0x8e },
-	{ OV7670_GAM10,          0x97 },
-	{ OV7670_GAM11,          0xa4 },
-	{ OV7670_GAM12,          0xaf },
-	{ OV7670_GAM13,          0xc5 },
-	{ OV7670_GAM14,          0xd7 },
-	{ OV7670_GAM15,          0xe8 },
-	{ OV7670_SLOP,           0x20 },
+	{ OV7670_GAM1,			0x10 },
+	{ OV7670_GAM2,			0x1e },
+	{ OV7670_GAM3,			0x35 },
+	{ OV7670_GAM4,			0x5a },
+	{ OV7670_GAM5,			0x69 },
+	{ OV7670_GAM6,			0x76 },
+	{ OV7670_GAM7,			0x80 },
+	{ OV7670_GAM8,			0x88 },
+	{ OV7670_GAM9,			0x8f },
+	{ OV7670_GAM10,			0x96 },
+	{ OV7670_GAM11,			0xa3 },
+	{ OV7670_GAM12,			0xaf },
+	{ OV7670_GAM13,			0xc4 },
+	{ OV7670_GAM14,			0xd7 },
+	{ OV7670_GAM15,			0xe8 },
+	{ OV7670_SLOP,			0x20 },
 
-	{ OV7670_COM3,           0x40 },
-	{ OV7670_COM5,           0xf5 },
-	{ OV7670_COM10,          0x02 },
-	{ OV7670_COM2,           0x01 }
+	/* Almost all of these are magic "reserved" values.  */
+	{ OV7670_COM5,           	0xf5 },
+	{ OV7670_COM12,			0x78 },
+	{ OV7670_GFIX,			0x00 },
+	{ OV7670_COM6,			0x4b },
+	{ 0x16, 0x02 },	/* reserved magic */	
+	{ OV7670_MVFP,			0x07 },
+
+
+	/* Almost all of these are magic "reserved" values.  */
+	{ 0x16, 0x02 },	
+	{ 0x21, 0x02 },		{ 0x22, 0x91 },
+	{ 0x29, 0x07 },		{ 0x33, 0x0b },
+	{ 0x35, 0x0b },		{ 0x37, 0x1d },
+	{ 0x38, 0x71 },		{ 0x39, 0x2a },
+	{ 0x4d, 0x40 },
+	{ 0x4e, 0x20 },	
+	{ 0x6b, 0x4a },		{ 0x74, 0x10 },
+	{ 0x8d, 0x4f },		{ 0x8e, 0 },
+	{ 0x8f, 0 },		{ 0x90, 0 },
+	{ 0x91, 0 },		{ 0x96, 0 },
+	{ 0x9a, 0 },		{ 0xb0, 0x84 },
+	{ 0xb1, 0x0c },		{ 0xb2, 0x0e },
+	{ 0xb3, 0x82 },		{ 0xb8, 0x0a },
+
+	/* Extra-weird stuff.  Some sort of multiplexor register */
+	{ 0x79, 0x01 },		{ 0xc8, 0xf0 },
+	{ 0x79, 0x0f },		{ 0xc8, 0x00 },
+	{ 0x79, 0x10 },		{ 0xc8, 0x7e },
+	{ 0x79, 0x0a },		{ 0xc8, 0x80 },
+	{ 0x79, 0x0b },		{ 0xc8, 0x01 },
+	{ 0x79, 0x0c },		{ 0xc8, 0x0f },
+	{ 0x79, 0x0d },		{ 0xc8, 0x20 },
+	{ 0x79, 0x09 },		{ 0xc8, 0x80 },
+	{ 0x79, 0x02 },		{ 0xc8, 0xc0 },
+	{ 0x79, 0x03 },		{ 0xc8, 0x40 },
+	{ 0x79, 0x05 },		{ 0xc8, 0x30 },
+	{ 0x79, 0x26 },
 };
 
 static int ov7670_write_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
@@ -350,7 +402,7 @@ static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 
 	rc = i2c_read_dt(spec, value, 1);
 	if (rc != 0) {
-		LOG_ERR("error writing: %d", rc);
+		LOG_ERR("error read: %d", rc);
 		return rc;
 	}
 
@@ -483,10 +535,9 @@ static int ov7670_set_fmt(const struct device *dev,
 
 	/* Set clock : framerate 30fps, input clock 24M*/
 	//ov7670_set_clock(dev, 30, 24000000);
-	ov7670_set_clock(dev, 14, 13000000);
 
 	/* Set output format */
-	for (uint8_t i = 0; i < ARRAY_SIZE(ov7670_pf_configs); i++) {
+	/*for (uint8_t i = 0; i < ARRAY_SIZE(ov7670_pf_configs); i++) {
 		if (ov7670_pf_configs[i].pixel_format == fmt->pixelformat) {
 			ret =  ov7670_modify_reg(&cfg->i2c,
 						OV7670_COM7,
@@ -502,10 +553,10 @@ static int ov7670_set_fmt(const struct device *dev,
 	ov7670_modify_reg(&cfg->i2c, OV7670_COM7, (1 << 5), (0 << 5));
 
 	com10 |= OV7670_COM10_VSYNC_NEG_MASK;
-	ov7670_write_reg(&cfg->i2c, OV7670_COM10, com10);
+	ov7670_write_reg(&cfg->i2c, OV7670_COM10, com10);*/
 
 	/* Don't swap output MSB/LSB. */
-	ov7670_write_reg(&cfg->i2c, OV7670_COM3, 0x00);
+	//ov7670_write_reg(&cfg->i2c, OV7670_COM3, 0x00);
 
 	/*
 	 * Output drive capability
@@ -514,28 +565,27 @@ static int ov7670_set_fmt(const struct device *dev,
 	 * 2: 3X
 	 * 3: 4X
 	 */
-	ov7670_modify_reg(&cfg->i2c, OV7670_COM2, 0x03, 0x03);
+	//ov7670_modify_reg(&cfg->i2c, OV7670_COM2, 0x03, 0x03);
 
 	/* Resolution and timing. */
-	hstart = 0x22U << 2U;
+	/*hstart = 0x22U << 2U;
 	vstart = 0x07U << 1U;
-	hsize = width + 16U;
+	hsize = width + 16U;*/
 
 	/* Set the window size. */
-	ov7670_write_reg(&cfg->i2c, OV7670_HSTART, hstart >> 2U);
-	ov7670_write_reg(&cfg->i2c, OV7670_HSIZE, hsize >> 2U);
+	/*ov7670_write_reg(&cfg->i2c, OV7670_HSTART, hstart >> 2U);
+	ov7670_write_reg(&cfg->i2c, OV7670_HSTOP, hsize >> 2U);
 	ov7670_write_reg(&cfg->i2c, OV7670_VSTART, vstart >> 1U);
-	ov7670_write_reg(&cfg->i2c, OV7670_VSIZE, height >> 1U);
-	ov7670_write_reg(&cfg->i2c, OV7670_HOUTSIZE, width >> 2U);
-	ov7670_write_reg(&cfg->i2c, OV7670_VOUTSIZE, height >> 1U);
+	ov7670_write_reg(&cfg->i2c, OV7670_VSTOP, height >> 1U);
 	ov7670_write_reg(&cfg->i2c, OV7670_HREF,
 			 ((vstart & 1U) << 6U) |
 			 ((hstart & 3U) << 4U) |
 			 ((height & 1U) << 2U) |
 			 ((hsize & 3U) << 0U));
-	return ov7670_write_reg(&cfg->i2c, OV7670_EXHCH,
+	ov7670_write_reg(&cfg->i2c, OV7670_EXHCH,
 					((height & 1U) << 2U) |
-					((width & 3U) << 0U));
+					((width & 3U) << 0U));*/
+	return 0;
 }
 
 static int ov7670_get_fmt(const struct device *dev,
@@ -643,14 +693,22 @@ static int ov7670_init(const struct device *dev)
 	k_sleep(K_MSEC(2));
 
 	/* set default/init format VGA RGB565 */
-	fmt.pixelformat = VIDEO_PIX_FMT_RGB565;
-	fmt.width = 640;
-	fmt.height = 480;
-	fmt.pitch = 640 * 2;
+	/*fmt.pixelformat = VIDEO_PIX_FMT_RGB565;
+	fmt.width = 176;
+	fmt.height = 144;
+	fmt.pitch = fmt.width * 2;
 	ret = ov7670_set_fmt(dev, VIDEO_EP_OUT, &fmt);
 	if (ret) {
 		LOG_ERR("Unable to configure default format");
 		return -EIO;
+	}*/
+
+	/* Configure Sensor */
+	ret = ov7670_write_all(dev, ov7670_init_reg_tb,
+				ARRAY_SIZE(ov7670_init_reg_tb));
+	if (ret) {
+		LOG_ERR("Unable to write ov7670 config");
+		return ret;
 	}
 
 	LOG_DBG("camera ready");
@@ -659,6 +717,48 @@ static int ov7670_init(const struct device *dev)
 }
 
 static struct ov7670_data ov7670_data_0;
+
+static void vsync_callback(const struct device *dev,
+				  struct gpio_callback *cb, uint32_t pins)
+{
+	static int i = 0;
+	i++;
+	LOG_INF("Int. cnt: %d", i);
+}
+
+static int dvp_interrupts_init(const struct device *dev)
+{
+	const struct ov7670_config *cfg = dev->config;
+	const struct ov7670_data *drv_data = dev->data;
+	int ret = 0;
+
+	if (!device_is_ready(cfg->dvp_vsync.port)) {
+		LOG_ERR("Vsync GPIO device is not ready");
+		return -ENODEV;
+	}
+	
+	LOG_DBG("Vsync GPIO device is ready");
+
+	// configure pin as input
+	ret = gpio_pin_configure_dt(&cfg->dvp_vsync, GPIO_INPUT);
+
+	// initialize the callback
+	gpio_init_callback(&drv_data->vsync_cb,
+			   vsync_callback,
+			   BIT(cfg->dvp_vsync.pin));
+
+	// add the callback to our pin
+	if (gpio_add_callback(cfg->dvp_vsync.port, &drv_data->vsync_cb) < 0) {
+		LOG_ERR("Failed to set gpio callback");
+		return -EIO;
+	}
+
+	// Trigger the interrupt at edge rising level
+	gpio_pin_interrupt_configure_dt(&cfg->dvp_vsync,
+					GPIO_INT_EDGE_RISING);
+
+	return 0;
+}
 
 static int ov7670_init_0(const struct device *dev)
 {
@@ -677,24 +777,28 @@ static int ov7670_init_0(const struct device *dev)
 	}
 #endif
 
+	// Set CLK signal
 	if (!device_is_ready(cfg->pinclk.dev)) {
 		LOG_ERR("pwm device is not ready");
 		return -ENODEV;
 	}
-
 	LOG_INF("PWM channel %d, period: %d", cfg->pinclk.channel, cfg->pinclk.period);
-
 	int ret = pwm_set_dt(&cfg->pinclk, cfg->pinclk.period, cfg->pinclk.period / 2U);
 	if (ret != 0){
 		LOG_ERR("set period error: %d", ret);
 	}
+
+	// Set dvp interrupts
+	dvp_interrupts_init(dev);
 
 	return ov7670_init(dev);
 }
 
 static const struct ov7670_config ov7670_cfg_0 = {
 	.i2c = I2C_DT_SPEC_INST_GET(0),
-	.pins = GPIO_DT_SPEC_INST_GET(0, dvp_gpios),
+	.dvp_hsync = GPIO_DT_SPEC_INST_GET_BY_IDX(0, dvp_gpios, 0),
+	.dvp_vsync = GPIO_DT_SPEC_INST_GET_BY_IDX(0, dvp_gpios, 1),
+	.dvp_pclk = GPIO_DT_SPEC_INST_GET_BY_IDX(0, dvp_gpios, 2),
 	.pinclk = PWM_DT_SPEC_GET(DT_INST_PHANDLE(0, pwm)),
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	.reset_gpio = GPIO_DT_SPEC_INST_GET(0, reset_gpios),
