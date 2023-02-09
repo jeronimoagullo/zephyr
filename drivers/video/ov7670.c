@@ -16,7 +16,7 @@
 #include <zephyr/drivers/pwm.h>
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(ov7670, LOG_LEVEL_INF);
 
 #define OV7670_REVISION  0x7673U //modified
 
@@ -388,7 +388,6 @@ static int ov7670_write_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 	return i2c_transfer_dt(spec, msgs, 2);
 }
 
-#ifdef CONFIG_BOARD_ESP32
 static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 			   uint8_t *value)
 {
@@ -410,28 +409,6 @@ static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
 
 	return 0;
 }
-
-#else
-static int ov7670_read_reg(const struct i2c_dt_spec *spec, uint8_t reg_addr,
-			   uint8_t *value)
-{
-	struct i2c_msg msgs[2];
-
-	msgs[0].buf = (uint8_t *)&reg_addr;
-	msgs[0].len = 1;
-	/*
-	 * When using I2C to read the registers of the SCCB device,
-	 * a stop bit is required after writing the register address
-	 */
-	msgs[0].flags = I2C_MSG_WRITE | I2C_MSG_STOP;
-
-	msgs[1].buf = (uint8_t *)value;
-	msgs[1].len = 1;
-	msgs[1].flags = I2C_MSG_READ | I2C_MSG_STOP | I2C_MSG_RESTART;
-
-	return i2c_transfer_dt(spec, msgs, 2);
-}
-#endif
 
 int ov7670_modify_reg(const struct i2c_dt_spec *spec,
 		      uint8_t reg_addr,
@@ -645,7 +622,7 @@ static int ov7670_init(const struct device *dev)
 	uint8_t pid, ver;
 	int ret;
 
-	LOG_DBG("Starting the ov7670 camera");
+	LOG_INF("Starting the ov7670 camera");
 
 #if DT_INST_NODE_HAS_PROP(0, reset_gpios)
 	LOG_INF("It has a reset pin");
@@ -673,14 +650,14 @@ static int ov7670_init(const struct device *dev)
 		return -ENODEV;
 	}
 
-	LOG_DBG("PID -> 0x%x, VER -> 0x%x", pid, ver);
+	LOG_INF("PID -> 0x%x, VER -> 0x%x", pid, ver);
 
 	if (OV7670_REVISION != (((uint32_t)pid << 8U) | (uint32_t)ver)) {
 		LOG_ERR("OV7670 Get Vision fail\n");
 		return -ENODEV;
 	}
 
-	LOG_DBG("The resvision ID is correct");
+	LOG_INF("The revision ID is correct");
 
 	/* Device identify OK, perform software reset. */
 	ret = ov7670_write_reg(&cfg->i2c, OV7670_COM7, 0x80);
@@ -688,7 +665,7 @@ static int ov7670_init(const struct device *dev)
 		LOG_ERR("Fail to reset the camera. Error: %d", ret);
 		return -ENODEV;
 	}
-	LOG_DBG("Reseting camera");
+	LOG_INF("Reseting camera");
 
 	k_sleep(K_MSEC(2));
 
@@ -711,7 +688,7 @@ static int ov7670_init(const struct device *dev)
 		return ret;
 	}
 
-	LOG_DBG("camera ready");
+	LOG_INF("camera ready");
 
 	return 0;
 }
@@ -737,10 +714,14 @@ static int dvp_interrupts_init(const struct device *dev)
 		return -ENODEV;
 	}
 	
-	LOG_DBG("Vsync GPIO device is ready");
+	LOG_INF("Vsync GPIO device is ready");
 
 	// configure pin as input
 	ret = gpio_pin_configure_dt(&cfg->dvp_vsync, GPIO_INPUT);
+	if(ret != 0){
+		LOG_ERR("Failed to configure gpio pin. Err: %d", ret);
+		return ret;
+	}
 
 	// initialize the callback
 	gpio_init_callback(&drv_data->vsync_cb,
@@ -748,14 +729,20 @@ static int dvp_interrupts_init(const struct device *dev)
 			   BIT(cfg->dvp_vsync.pin));
 
 	// add the callback to our pin
-	if (gpio_add_callback(cfg->dvp_vsync.port, &drv_data->vsync_cb) < 0) {
-		LOG_ERR("Failed to set gpio callback");
+	ret = gpio_add_callback(cfg->dvp_vsync.port, &drv_data->vsync_cb);
+	if (ret != 0) {
+		LOG_ERR("Failed to set gpio callback. Err: %d", ret);
 		return -EIO;
 	}
 
 	// Trigger the interrupt at edge rising level
-	gpio_pin_interrupt_configure_dt(&cfg->dvp_vsync,
+	ret = gpio_pin_interrupt_configure_dt(&cfg->dvp_vsync,
 					GPIO_INT_EDGE_RISING);
+
+	if (ret != 0) {
+		LOG_ERR("Failed to configure gpio pin interrupt. Err: %d", ret);
+		return ret;
+	}
 
 	return 0;
 }
@@ -789,7 +776,11 @@ static int ov7670_init_0(const struct device *dev)
 	}
 
 	// Set dvp interrupts
-	dvp_interrupts_init(dev);
+	ret = dvp_interrupts_init(dev);
+	if (ret != 0){
+		LOG_ERR("Error initializing dvp interrupt. Err: %d", ret);
+		return ret;
+	}
 
 	return ov7670_init(dev);
 }
