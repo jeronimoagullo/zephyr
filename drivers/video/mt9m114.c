@@ -12,6 +12,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/drivers/video.h>
+#include <zephyr/drivers/video-controls.h>
 #include <zephyr/drivers/i2c.h>
 
 LOG_MODULE_REGISTER(video_mt9m114, CONFIG_VIDEO_LOG_LEVEL);
@@ -31,6 +32,7 @@ LOG_MODULE_REGISTER(video_mt9m114, CONFIG_VIDEO_LOG_LEVEL);
 #define MT9M114_CAM_SENSOR_CFG_Y_ADDR_END       0xC804
 #define MT9M114_CAM_SENSOR_CFG_X_ADDR_END       0xC806
 #define MT9M114_CAM_SENSOR_CFG_CPIPE_LAST_ROW   0xC818
+#define MT9M114_CAM_SENSOR_CTRL_READ_MODE       0xC834
 #define MT9M114_CAM_CROP_WINDOW_WIDTH           0xC858
 #define MT9M114_CAM_CROP_WINDOW_HEIGHT          0xC85A
 #define MT9M114_CAM_OUTPUT_WIDTH                0xC868
@@ -381,6 +383,46 @@ static int mt9m114_set_output_format(const struct device *dev, int pixel_format)
 	return ret;
 }
 
+static int mt9m114_set_horizontal_mirror(const struct device *dev, int enable)
+{
+	int ret = 0;
+	uint16_t reg = 0;
+
+	ret = mt9m114_read_reg(dev, MT9M114_CAM_SENSOR_CTRL_READ_MODE, sizeof(reg), &reg);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	if (enable) {
+		reg |= BIT(0);
+	} else {
+		reg &= ~BIT(0);
+	}
+
+	return mt9m114_write_reg(dev, MT9M114_CAM_SENSOR_CTRL_READ_MODE, sizeof(reg), &reg);
+}
+
+static int mt9m114_set_vertical_flip(const struct device *dev, int enable)
+{
+	int ret = 0;
+	uint16_t reg = 0;
+
+	ret = mt9m114_read_reg(dev, MT9M114_CAM_SENSOR_CTRL_READ_MODE, sizeof(reg), &reg);
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	if (enable) {
+		reg |= BIT(1);
+	} else {
+		reg &= ~BIT(1);
+	}
+
+	return mt9m114_write_reg(dev, MT9M114_CAM_SENSOR_CTRL_READ_MODE, sizeof(reg), &reg);
+}
+
 static int mt9m114_set_fmt(const struct device *dev, enum video_endpoint_id ep,
 			   struct video_format *fmt)
 {
@@ -461,12 +503,36 @@ static int mt9m114_get_caps(const struct device *dev, enum video_endpoint_id ep,
 	return 0;
 }
 
+static int mt9m114_set_ctrl(const struct device *dev, unsigned int cid, void *value)
+{
+	int ret = 0;
+
+	switch (cid) {
+	case VIDEO_CID_HFLIP:
+		ret = mt9m114_set_horizontal_mirror(dev, (int)value);
+		break;
+	case VIDEO_CID_VFLIP:
+		ret = mt9m114_set_vertical_flip(dev, (int)value);
+		break;
+	default:
+		return -ENOTSUP;
+	}
+
+	if (ret < 0) {
+		return ret;
+	}
+
+	/* Apply Config */
+	return mt9m114_set_state(dev, MT9M114_SYS_STATE_ENTER_CONFIG_CHANGE);
+}
+
 static const struct video_driver_api mt9m114_driver_api = {
 	.set_format = mt9m114_set_fmt,
 	.get_format = mt9m114_get_fmt,
 	.get_caps = mt9m114_get_caps,
 	.stream_start = mt9m114_stream_start,
 	.stream_stop = mt9m114_stream_stop,
+	.set_ctrl = mt9m114_set_ctrl,
 };
 
 static int mt9m114_init(const struct device *dev)
