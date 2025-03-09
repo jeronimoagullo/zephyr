@@ -1,0 +1,217 @@
+/*
+ * Copyright (c) 2024 Jerónimo Agulló <jeronimoagullo97@gmail.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/dts-v1/;
+
+#include <espressif/esp32s3/esp32s3_wroom_n8.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <zephyr/dt-bindings/input/esp32-touch-sensor-input.h>
+#include <espressif/partitions_0x0_amp.dtsi>
+#include "esp32s3_smart_display-pinctrl.dtsi"
+
+/ {
+	model = "viewe ESP32S3-SMART-DISPLAY PROCPU";
+	compatible = "espressif,esp32s3";
+
+	aliases {
+		i2c-0 = &i2c0;
+		watchdog0 = &wdt0;
+	};
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,console = &uart0;
+		zephyr,shell-uart = &uart0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+		zephyr,bt-hci = &esp32_bt_hci;
+		zephyr,display = &lcd_display;
+		zephyr,touch = &gt911_ic2;
+	};
+
+	aliases {
+		uart-0 = &uart0;
+		sw0 = &button0;
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+		button0: button_0 {
+			gpios = <&gpio0 0 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "BOOT Button";
+			zephyr,code = <INPUT_KEY_0>;
+		};
+	};
+
+	lvgl_pointer {
+		compatible = "zephyr,lvgl-pointer-input";
+		input = <&gt911_ic2>;
+	};
+
+	lcd_display: lcd_display {
+		compatible = "sitronix,st7262";
+		status = "okay";
+
+		/*pinctrl-0 = <&ltdc_r0_io45 &ltdc_r1_io48 &ltdc_r2_io47 &ltdc_r3_io21 &ltdc_r4_io14
+			&ltdc_g0_io5 &ltdc_g1_io6 &ltdc_g2_io7 &ltdc_g3_io15 &ltdc_g4_io16 &ltdc_g5_io4
+			&ltdc_b0_io8 &ltdc_b1_io3 &ltdc_b2_io46 &ltdc_b3_io9 &ltdc_b4_io1
+			&ltdc_clk_io42 &ltdc_hsync_io39 &ltdc_vsync_io41 &ltdc_de_io40>;
+		pinctrl-names = "default";*/
+		//disp-on-gpios = <&gpioi 12 GPIO_ACTIVE_HIGH>; // no connected
+		bl-ctrl-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+
+		width = <800>;
+		height = <480>;
+		//pixel-format = <PANEL_PIXEL_FORMAT_RGB_565>;
+		display-timings {
+			compatible = "zephyr,panel-timing";
+			de-active = <0>;
+			pixelclk-active = <0>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			hsync-len = <1>;
+			vsync-len = <10>;
+			hback-porch = <42>;
+			vback-porch = <12>;
+			hfront-porch = <20>;
+			vfront-porch = <4>;
+			clock-frequency = <25000000>; //25MHz
+		};
+	};
+};
+
+&usb_serial {
+	status = "disabled";
+};
+
+&uart0 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart0_default>;
+	pinctrl-names = "default";
+};
+
+&gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
+	status = "okay";
+};
+
+&touch {
+	debounce-interval-ms = <30>;
+	href-microvolt = <2700000>;
+	lref-microvolt = <500000>;
+	href-atten-microvolt = <1000000>;
+	filter-mode = <ESP32_TOUCH_FILTER_MODE_IIR_16>;
+	filter-debounce-cnt = <1>;
+	filter-noise-thr = <ESP32_TOUCH_FILTER_NOISE_THR_4_8TH>;
+	filter-jitter-step = <4>;
+	filter-smooth-level = <ESP32_TOUCH_FILTER_SMOOTH_MODE_IIR_2>;
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-names = "default";
+	gt911_ic2: gt911-ic2@5d {
+		compatible = "goodix,gt911";
+		reg = <0x5d>;
+		irq-gpios = <&gpio0 18 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio0 38 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&i2c1 {
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+	pinctrl-0 = <&i2c1_default>;
+	pinctrl-names = "default";
+};
+
+&i2s0 {
+	pinctrl-0 = <&i2s0_default>;
+	pinctrl-names = "default";
+	status = "disabled";
+};
+
+&i2s1 {
+	pinctrl-0 = <&i2s1_default>;
+	pinctrl-names = "default";
+	status = "disabled";
+};
+
+&spi2 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	pinctrl-0 = <&spim2_default>;
+	pinctrl-names = "default";
+};
+
+&spi3 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+	pinctrl-0 = <&spim3_default>;
+	pinctrl-names = "default";
+};
+
+&twai {
+	pinctrl-0 = <&twai_default>;
+	pinctrl-names = "default";
+};
+
+&timer0 {
+	status = "disabled";
+};
+
+&timer1 {
+	status = "disabled";
+};
+
+&timer2 {
+	status = "disabled";
+};
+
+&timer3 {
+	status = "disabled";
+};
+
+&wdt0 {
+	status = "okay";
+};
+
+&trng0 {
+	status = "okay";
+};
+
+&esp32_bt_hci {
+	status = "okay";
+};
+
+/*
+ltdc_r0_io45
+ltdc_r1_io48
+ltdc_r2_io47
+ltdc_r3_io21
+ltdc_r4_io14
+ltdc_g0_io5
+ltdc_g1_io6
+ltdc_g2_io7
+ltdc_g3_io15
+ltdc_g4_io16
+ltdc_g5_io4
+ltdc_b0_io8
+ltdc_b1_io3
+ltdc_b2_io46
+ltdc_b3_io9
+ltdc_b4_io1
+ltdc_clk_io42
+ltdc_hsync_io39
+ltdc_vsync_io41
+ltdc_de_io40
+*/

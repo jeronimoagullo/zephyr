@@ -1,0 +1,15 @@
+# Copyright (c) Jerónimo Agulló Ocampos <jeronimoagullo97@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+description: ESP32s3 LCD-TFT display controller
+
+compatible: "espressif,esp32-lcd-cam-display"
+
+include: [lcd-controller.yaml, pinctrl-device.yaml, reset-device.yaml]
+
+properties:
+    bl-ctrl-gpios:
+      type: phandle-array
+      description: |
+        Backlight on/off GPIO pin.
+        Configure the GPIO polarity (active high/active low) according to LCD datasheet.

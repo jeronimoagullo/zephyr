@@ -1,0 +1,6 @@
+board:
+  name: esp32s3_smart_display
+  full_name: ESP32-S3-SMART-DISPLAY
+  vendor: viewe
+  socs:
+  - name: esp32s3

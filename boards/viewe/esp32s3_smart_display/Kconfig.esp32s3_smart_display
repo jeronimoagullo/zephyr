@@ -1,0 +1,7 @@
+# Copyright (c) 2024 Jerónimo Agulló <jeronimoagullo97@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_ESP32S3_SMART_DISPLAY
+	select SOC_ESP32S3_WROOM_N8
+	select SOC_ESP32S3_PROCPU if BOARD_ESP32S3_SMART_DISPLAY_ESP32S3_PROCPU
+	select SOC_ESP32S3_APPCPU if BOARD_ESP32S3_SMART_DISPLAY_ESP32S3_APPCPU
